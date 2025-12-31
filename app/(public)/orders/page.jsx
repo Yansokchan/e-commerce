@@ -1,46 +1,69 @@
-'use client'
-import PageTitle from "@/components/PageTitle"
+"use client";
+import PageTitle from "@/components/PageTitle";
 import { useEffect, useState } from "react";
 import OrderItem from "@/components/OrderItem";
 import { orderDummyData } from "@/assets/assets";
 
 export default function Orders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
 
-    useEffect(() => {
-        setOrders(orderDummyData)
-    }, []);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    return (
-        <div className="min-h-[70vh] mx-6">
-            {orders.length > 0 ? (
-                (
-                    <div className="my-20 max-w-7xl mx-auto">
-                        <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
+      if (user) {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
-                        <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
-                            <thead>
-                                <tr className="max-sm:text-sm text-slate-600 max-md:hidden">
-                                    <th className="text-left">Product</th>
-                                    <th className="text-center">Total Price</th>
-                                    <th className="text-left">Address</th>
-                                    <th className="text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {orders.map((order) => (
-                                    <OrderItem order={order} key={order.id} />
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )
-            ) : (
-                <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
-                    <h1 className="text-2xl sm:text-4xl font-semibold">You have no orders</h1>
-                </div>
-            )}
+        if (data) setOrders(data);
+      }
+      setLoading(false);
+    };
+    fetchOrders();
+  }, []);
+
+  return (
+    <div className="min-h-[70vh] mx-6">
+      {orders.length > 0 ? (
+        <div className="my-20 max-w-7xl mx-auto">
+          <PageTitle
+            heading="My Orders"
+            text={`Showing total ${orders.length} orders`}
+            linkText={"Go to home"}
+          />
+
+          <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
+            <thead>
+              <tr className="max-sm:text-sm text-slate-600 max-md:hidden">
+                <th className="text-left">Product</th>
+                <th className="text-center">Total Price</th>
+                <th className="text-left">Address</th>
+                <th className="text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <OrderItem order={order} key={order.id} />
+              ))}
+            </tbody>
+          </table>
         </div>
-    )
+      ) : (
+        <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
+          <h1 className="text-2xl sm:text-4xl font-semibold">
+            You have no orders
+          </h1>
+        </div>
+      )}
+    </div>
+  );
 }
