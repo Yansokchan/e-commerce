@@ -17,8 +17,9 @@ const LatestProducts = () => {
         } of ${products.length} products`}
         href="/shop"
       />
-      <div className="mt-12 grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12">
+      <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 xl:gap-8">
         {products
+          .filter((product) => product.status !== "archived")
           .slice()
           .sort(
             (a, b) =>

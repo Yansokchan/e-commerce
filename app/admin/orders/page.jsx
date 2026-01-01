@@ -211,17 +211,17 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="p-4 font-medium text-gray-500">Order ID</th>
-              <th className="p-4 font-medium text-gray-500">Items</th>
-              <th className="p-4 font-medium text-gray-500">Phone</th>
-              <th className="p-4 font-medium text-gray-500">Total</th>
-              <th className="p-4 font-medium text-gray-500">Status</th>
-              <th className="p-4 font-medium text-gray-500">Date</th>
-              <th className="p-4 font-medium text-gray-500">Actions</th>
+              <th className="p-4 font-medium text-gray-600">Order ID</th>
+              <th className="p-4 font-medium text-gray-600">Items</th>
+              <th className="p-4 font-medium text-gray-600">Phone</th>
+              <th className="p-4 font-medium text-gray-600">Total</th>
+              <th className="p-4 font-medium text-gray-600">Status</th>
+              <th className="p-4 font-medium text-gray-600">Date</th>
+              <th className="p-4 font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -242,13 +242,13 @@ export default function AdminOrdersPage() {
                       ? order.items.length
                       : typeof order.items === "string"
                       ? JSON.parse(order.items || "[]").length
-                      : 0}{" "}
+                      : 0}
                     item(s)
                   </div>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <PhoneIcon size={14} />
+                    {/* <PhoneIcon size={14} /> */}
                     {order.phone || "N/A"}
                   </div>
                 </td>

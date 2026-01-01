@@ -1,14 +1,16 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { EditIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import ProductDetailsModal from "./ProductDetailsModal";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -45,21 +47,26 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow overflow-hidden overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="p-4 font-medium text-gray-500">Image</th>
-              <th className="p-4 font-medium text-gray-500">Name</th>
-              <th className="p-4 font-medium text-gray-500">Price</th>
-              <th className="p-4 font-medium text-gray-500">Category</th>
-              <th className="p-4 font-medium text-gray-500">Stock</th>
-              <th className="p-4 font-medium text-gray-500">Actions</th>
+              <th className="p-4 font-medium text-gray-600">Image</th>
+              <th className="p-4 font-medium text-gray-600">Name</th>
+              <th className="p-4 font-medium text-gray-600">Price</th>
+              <th className="p-4 font-medium text-gray-600">Category</th>
+              <th className="p-4 font-medium text-gray-600">Stock</th>
+              <th className="p-4 font-medium text-gray-600">Status</th>
+              <th className="p-4 font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {products.map((product) => (
-              <tr key={product.id}>
+              <tr
+                key={product.id}
+                onClick={() => setSelectedProduct(product)}
+                className="hover:bg-gray-50 cursor-pointer transition-colors"
+              >
                 <td className="p-4">
                   <div className="relative h-12 w-12 rounded bg-gray-100 overflow-hidden">
                     {product.images?.[0] && (
@@ -89,32 +96,25 @@ export default function ProductsPage() {
                   </span>
                 </td>
                 <td className="p-4">
+                  <span
+                    className={`px-2 py-1 rounded text-xs uppercase font-semibold ${
+                      product.status === "archived"
+                        ? "bg-gray-100 text-gray-600"
+                        : "bg-green-50 text-green-600"
+                    }`}
+                  >
+                    {product.status || "active"}
+                  </span>
+                </td>
+                <td className="p-4" onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-2">
                     <Link
                       href={`/admin/products/edit/${product.id}`}
-                      className="text-indigo-600 hover:text-indigo-800"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-md transition-colors text-sm font-medium"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                        <path d="m15 5 4 4" />
-                      </svg>
+                      <EditIcon size={16} />
+                      Edit
                     </Link>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <TrashIcon size={18} />
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -127,6 +127,12 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+      {selectedProduct && (
+        <ProductDetailsModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </div>
   );
 }

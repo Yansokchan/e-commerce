@@ -12,15 +12,47 @@ export async function GET(request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
+      // Check if user has completed onboarding
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // First check Auth Metadata (fastest)
+        const hasCompletedOnboarding = user.user_metadata?.onboarding_completed;
+        let needsOnboarding = !hasCompletedOnboarding;
+
+        // If metadata says not completed, double check DB (just in case they finished but metadata didn't sync)
+        if (needsOnboarding) {
+          const { data: profile } = await supabase
+            .from("user_profiles")
+            .select("onboarding_completed")
+            .eq("id", user.id)
+            .single();
+
+          if (profile?.onboarding_completed) {
+            needsOnboarding = false;
+            // Sync metadata back if DB says they are done
+            await supabase.auth.updateUser({
+              data: { onboarding_completed: true },
+            });
+          }
+        }
+
+        const redirectPath = needsOnboarding ? "/?onboarding=true" : next;
+
+        const forwardedHost = request.headers.get("x-forwarded-host");
+        const isLocalEnv = process.env.NODE_ENV === "development";
+
+        if (isLocalEnv) {
+          return NextResponse.redirect(`${origin}${redirectPath}`);
+        } else if (forwardedHost) {
+          return NextResponse.redirect(
+            `https://${forwardedHost}${redirectPath}`
+          );
+        } else {
+          return NextResponse.redirect(`${origin}${redirectPath}`);
+        }
       }
     }
   }

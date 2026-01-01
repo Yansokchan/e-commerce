@@ -1,22 +1,39 @@
 @import "tailwindcss";
 
 @layer components {
-    @keyframes marqueeScroll {
-        0% {
-            transform: translateX(0%);
-        }
-        100% {
-            transform: translateX(-50%);
-        }
+  @keyframes marqueeScroll {
+    0% {
+      transform: translateX(0%);
     }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes rippling {
+    0% {
+      opacity: 1;
+      transform: scale(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2);
+    }
+  }
 }
 
 @layer base {
-    button {
-        cursor: pointer;
-    }
+  button {
+    cursor: pointer;
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+
+@layer utilities {
+  .animate-rippling {
+    animation: rippling 600ms ease-out;
+  }
 }

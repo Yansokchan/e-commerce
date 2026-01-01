@@ -4,8 +4,9 @@ import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
-import { XIcon, UploadCloudIcon } from "lucide-react";
+import { XIcon, UploadCloudIcon, ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -18,6 +19,9 @@ export default function AddProductPage() {
     price: "",
     mrp: "",
     category: "",
+    category: "",
+    stock: "",
+    status: "active",
     images: [],
   });
 
@@ -45,7 +49,9 @@ export default function AddProductPage() {
         price: parseFloat(formData.price),
         mrp: parseFloat(formData.mrp),
         category: formData.category,
-        stock: 0, // Default stock to 0 for admin-added products
+        category: formData.category,
+        stock: parseInt(formData.stock),
+        status: formData.status,
         images: formData.images,
       },
     ]);
@@ -60,6 +66,13 @@ export default function AddProductPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      <Link
+        href="/admin/products"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+      >
+        <ArrowLeft size={20} />
+        Back to Products
+      </Link>
       <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,23 +129,37 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Category
-          </label>
-          <select
-            name="category"
-            required
-            onChange={handleChange}
-            className="mt-1 block w-full rounded border border-gray-300 p-2"
-          >
-            <option value="">Select Category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Fashion">Fashion</option>
-            <option value="Home">Home</option>
-            <option value="Beauty">Beauty</option>
-            <option value="Sports">Sports</option>
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Category
+            </label>
+            <select
+              name="category"
+              required
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border border-gray-300 p-2"
+            >
+              <option value="">Select Category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Home">Home</option>
+              <option value="Beauty">Beauty</option>
+              <option value="Sports">Sports</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Stock Quantity
+            </label>
+            <input
+              name="stock"
+              type="number"
+              required
+              onChange={handleChange}
+              className="mt-1 block w-full rounded border border-gray-300 p-2"
+            />
+          </div>
         </div>
 
         <div>

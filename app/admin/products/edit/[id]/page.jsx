@@ -4,8 +4,9 @@ import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { CldUploadWidget } from "next-cloudinary";
-import { XIcon, UploadCloudIcon } from "lucide-react";
+import { XIcon, UploadCloudIcon, ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function EditProductPage() {
     mrp: "",
     category: "",
     stock: "",
+    status: "",
     images: [],
   });
 
@@ -48,8 +50,10 @@ export default function EditProductPage() {
         description: data.description || "",
         price: data.price || "",
         mrp: data.mrp || "",
+        mrp: data.mrp || "",
         category: data.category || "",
         stock: data.stock || 0,
+        status: data.status || "active",
         images: data.images || [],
       });
       setLoading(false);
@@ -82,6 +86,7 @@ export default function EditProductPage() {
         mrp: parseFloat(formData.mrp),
         category: formData.category,
         stock: parseInt(formData.stock),
+        status: formData.status,
         images: formData.images,
       })
       .eq("id", productId);
@@ -98,6 +103,13 @@ export default function EditProductPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      <Link
+        href="/admin/products"
+        className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+      >
+        <ArrowLeft size={20} />
+        Back to Products
+      </Link>
       <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -191,6 +203,22 @@ export default function EditProductPage() {
               className="mt-1 block w-full rounded border border-gray-300 p-2"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Product Status
+          </label>
+          <select
+            name="status"
+            required
+            value={formData.status}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded border border-gray-300 p-2"
+          >
+            <option value="active">Active (Selling)</option>
+            <option value="archived">Archived (Not Selling)</option>
+          </select>
         </div>
 
         <div>

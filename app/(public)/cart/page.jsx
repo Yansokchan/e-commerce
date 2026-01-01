@@ -3,16 +3,20 @@ import Counter from "@/components/Counter";
 import OrderSummary from "@/components/OrderSummary";
 import PageTitle from "@/components/PageTitle";
 import { deleteItemFromCart } from "@/lib/features/cart/cartSlice";
+import { openLoginModal } from "@/lib/features/auth/authSlice";
 import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function Cart() {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
+  const router = useRouter();
 
   const { cartItems } = useSelector((state) => state.cart);
   const products = useSelector((state) => state.product.list);
+  const user = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
 
@@ -40,10 +44,21 @@ export default function Cart() {
   };
 
   useEffect(() => {
+    if (!user) {
+      router.push("/");
+      dispatch(openLoginModal());
+    }
+  }, [user, router, dispatch]);
+
+  useEffect(() => {
     if (products.length > 0) {
       createCartArray();
     }
   }, [cartItems, products]);
+
+  if (!user) {
+    return null;
+  }
 
   return cartArray.length > 0 ? (
     <div className="min-h-screen mx-6 text-slate-800">
