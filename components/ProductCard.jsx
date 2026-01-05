@@ -17,7 +17,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link href={`/product/${product.id}`} className="group block w-full">
-      <div className="bg-[#F5F5F5] w-full aspect-[4/5] sm:aspect-[3/4] rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="bg-pink-50/50 border border-white/50 shadow shadow-slate-200/80 w-full aspect-[4/5] sm:aspect-[3/4] rounded-lg flex items-center justify-center overflow-hidden">
         <Image
           width={500}
           height={500}
@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
           <div className="flex">
             <div className="flex text-xs">
               {product.stock > 5 ? (
-                <p className="text-green-600 font-medium">Instock</p>
+                <p className="text-pink-600 font-medium">Instock</p>
               ) : product.stock > 0 ? (
                 <p className="text-orange-600 font-medium">
                   Only {product.stock} left in stock - order soon.

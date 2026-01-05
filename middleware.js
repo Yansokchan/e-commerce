@@ -8,6 +8,7 @@ export async function middleware(request) {
 
   // Check for protected routes
   if (request.nextUrl.pathname.startsWith("/admin")) {
+    // Allow access to login page without checks
     if (request.nextUrl.pathname === "/admin/login") {
       return response;
     }
@@ -29,9 +30,17 @@ export async function middleware(request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+    // First check: User must be logged in
+    // If not logged in, AdminLayout will show login modal
+    // No redirect needed here
+
+    // Second check: User email must match ADMIN_EMAIL
+    if (user && user.email !== process.env.ADMIN_EMAIL) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
+
+    // Admin session check is now handled by AdminLayout modal
+    // Middleware just ensures user has admin email if logged in
   }
 
   return response;

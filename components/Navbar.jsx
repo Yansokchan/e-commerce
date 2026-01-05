@@ -134,8 +134,15 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
-            <Link href="/">Home</Link>
-            <Link href="/shop">Shop</Link>
+            <Link href="/" className="hover:text-pink-600 transition-colors">
+              Home
+            </Link>
+            <Link
+              href="/shop"
+              className="hover:text-pink-600 transition-colors"
+            >
+              Shop
+            </Link>
 
             <form
               onSubmit={handleSearch}
@@ -159,7 +166,7 @@ const Navbar = () => {
                   className="relative flex items-center gap-2 text-slate-600 hover:text-pink-600 transition-colors"
                 >
                   <ShoppingCart size={18} />
-                  Cart
+                  My Cart
                   <button className="absolute -top-1 left-3 text-[8px] text-white bg-slate-600 size-3.5 rounded-full">
                     {cartCount}
                   </button>
@@ -170,7 +177,7 @@ const Navbar = () => {
                   className="flex items-center gap-2 text-slate-600 hover:text-pink-600 transition-colors"
                 >
                   <User size={18} />
-                  Orders
+                  My Orders
                 </Link>
               </>
             )}
@@ -213,7 +220,7 @@ const Navbar = () => {
             ) : (
               <RippleButton
                 onClick={() => dispatch(openLoginModal())}
-                className="px-8 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-white rounded-full"
+                className="px-8 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-white rounded-xl shadow-md shadow-slate-200/80 ring-1 ring-inset ring-white/20"
               >
                 Sign in
               </RippleButton>
@@ -282,7 +289,7 @@ const Navbar = () => {
                     <div className="py-1">
                       <Link
                         href="/shop"
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50/30"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <Search size={16} />
@@ -290,22 +297,22 @@ const Navbar = () => {
                       </Link>
                       <Link
                         href="/cart"
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50/30"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <ShoppingCart size={16} />
-                        Cart
+                        My Cart
                         <span className="ml-auto backdrop-blur-3xl text-pink-600 text-xs px-2 py-0.5 rounded-full">
                           {cartCount}
                         </span>
                       </Link>
                       <Link
                         href="/orders"
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50/30"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <User size={16} />
-                        Orders
+                        My Orders
                       </Link>
                     </div>
 
@@ -313,7 +320,7 @@ const Navbar = () => {
 
                     <button
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-400/30 transition-colors"
                     >
                       <LogOut size={16} />
                       Sign out
@@ -324,7 +331,7 @@ const Navbar = () => {
             ) : (
               <RippleButton
                 onClick={() => dispatch(openLoginModal())}
-                className="px-5 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-sm text-white rounded-full shadow-lg"
+                className="px-5 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-sm text-white rounded-xl shadow-xl shadow-slate-200/80 ring ring-inset ring-white/20"
               >
                 Sign In
               </RippleButton>

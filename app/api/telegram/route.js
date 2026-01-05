@@ -1,8 +1,28 @@
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const { phone, items, total, user } = await request.json();
+    // Sanitize credentials
+    let botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
+    if (botToken && botToken.startsWith("bot")) botToken = botToken.slice(3);
+
+    // Initialize Supabase Client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Supabase credentials missing");
+    }
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn("Using ANON KEY for Supabase. RLS might block inserts.");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { phone, address, items, total, user } = await request.json();
 
     if (!phone || !items || items.length === 0) {
       return NextResponse.json(
@@ -12,8 +32,6 @@ export async function POST(request) {
     }
 
     // Sanitize credentials
-    let botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
-    const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
     if (botToken && botToken.startsWith("bot")) botToken = botToken.slice(3);
 
     if (!botToken || !chatId) {
@@ -30,6 +48,7 @@ export async function POST(request) {
 
 👤 *Customer*: ${user?.email || "Guest"}
 📱 *Phone*: ${phone}
+📍 *Address*: ${address || "N/A"}
 
 🛒 *Items*:
 ${itemsList}
@@ -87,20 +106,7 @@ ${itemsList}
     }
 
     // 1. Save to Supabase
-    // Create Supabase client with Admin key if needed, or just use the user context?
-    // Since we are server-side, we should probably use a service role key if we are inserting on behalf of others,
-    // OR just rely on RLS policies that allow 'insert for everyone'.
-    // The policy "Enable insert for everyone" is set to true, so standard client works.
-
-    // However, for Next.js API Routes, we prefer @supabase/supabase-js with ANON key
-    const { createClient } = require("@supabase/supabase-js");
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    // Use Service Role Key if available (for bypassing RLS updates), otherwise Anon
-    const supabaseKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Note: We initialized supabase at the start of the function
 
     const { data: orderData, error: dbError } = await supabase
       .from("orders")
@@ -109,6 +115,7 @@ ${itemsList}
         items: items, // JSONB
         total: total,
         phone: phone,
+        location: address,
         status: "pending",
       })
       .select()
@@ -116,8 +123,10 @@ ${itemsList}
 
     if (dbError) {
       console.error("Supabase DB Error:", dbError);
-      // If DB fails, we can't really track the order, but we might still notify telegram?
-      // Let's assume critical failure if DB fails.
+      return NextResponse.json(
+        { error: `Database Error: ${dbError.message}` },
+        { status: 500 }
+      );
     }
 
     // Send Request
@@ -132,7 +141,19 @@ ${itemsList}
         throw new Error(await response.text());
       }
 
-      // Order saved successfully - status remains 'pending' until admin confirms
+      // Order saved successfully and notified
+      // 2. Clear Cart in DB if user is logged in
+      if (user?.id) {
+        const { error: clearCartError } = await supabase
+          .from("carts")
+          .update({ items: {} }) // Clear items
+          .eq("user_id", user.id);
+
+        if (clearCartError) {
+          console.error("Failed to clear remote cart:", clearCartError);
+          // Non-critical: we continue as the order was successful
+        }
+      }
     } catch (telegramError) {
       console.error("Telegram Error:", telegramError);
 
@@ -149,7 +170,7 @@ ${itemsList}
       throw telegramError;
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, orderId: orderData.id });
   } catch (error) {
     console.error("Error sending order:", error);
     return NextResponse.json(

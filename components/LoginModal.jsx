@@ -62,7 +62,7 @@ export default function LoginModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       {/* Modal Box */}
-      <div className="relative w-full max-w-md rounded-2xl bg-white/75 p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="relative w-full max-w-md rounded-xl backdrop-blur-2xl bg-white/95 p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -88,7 +88,7 @@ export default function LoginModal() {
           <RippleButton
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 px-4 py-3 text-sm font-medium text-white shadow-xl hover:bg-gray-50 focus:outline-none transition-all disabled:opacity-50 ring-[0.5px] ring-white/10 ring-offset"
+            className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 px-4 py-3 text-sm font-medium text-white shadow-xl focus:outline-none transition-all disabled:opacity-50 ring-1 ring-inset ring-white/20"
           >
             <div className="flex items-center justify-center gap-2 w-full px-4">
               {loading ? (

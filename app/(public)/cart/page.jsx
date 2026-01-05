@@ -4,11 +4,12 @@ import OrderSummary from "@/components/OrderSummary";
 import PageTitle from "@/components/PageTitle";
 import { deleteItemFromCart } from "@/lib/features/cart/cartSlice";
 import { openLoginModal } from "@/lib/features/auth/authSlice";
-import { Trash2Icon } from "lucide-react";
+import { ShoppingCart, Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Cart() {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
@@ -82,39 +83,62 @@ export default function Cart() {
             </thead>
             <tbody>
               {cartArray.map((item, index) => (
-                <tr key={index} className="space-x-2">
-                  <td className="flex gap-3 my-4">
-                    <div className="flex gap-3 items-center justify-center bg-slate-100 size-18 rounded-md">
-                      <Image
-                        src={item.images?.[0] || "/placeholder.png"}
-                        className="h-14 w-auto object-contain"
-                        alt=""
-                        width={45}
-                        height={45}
-                      />
+                <tr
+                  key={index}
+                  className="border-b border-slate-50 last:border-0"
+                >
+                  <td className="py-4">
+                    <div className="flex gap-3 items-center">
+                      {/* Standardized Image Container */}
+                      <div className="flex-shrink-0 bg-slate-100 size-16 md:size-20 rounded-xl overflow-hidden relative border border-slate-200/50">
+                        <Image
+                          src={item.images?.[0] || "/placeholder.png"}
+                          className="object-cover"
+                          alt={item.name}
+                          fill
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-800 text-sm md:text-base truncate max-w-[120px] sm:max-w-none">
+                          {item.name}
+                        </p>
+                        <p className="text-[10px] md:text-xs text-slate-400 uppercase font-bold tracking-wider">
+                          {item.category}
+                        </p>
+                        <p className="text-pink-600 font-bold text-sm md:text-base mt-0.5">
+                          {currency}
+                          {item.price}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="max-sm:text-sm">{item.name}</p>
-                      <p className="text-xs text-slate-500">{item.category}</p>
-                      <p>
+                  </td>
+                  <td className="text-center py-4">
+                    <div className="scale-90 md:scale-100 origin-center">
+                      <Counter productId={item.id} />
+                    </div>
+                  </td>
+                  <td className="text-center py-4">
+                    <div className="flex flex-col items-center gap-1">
+                      <p className="font-bold text-slate-700 text-sm md:text-base">
                         {currency}
-                        {item.price}
+                        {(item.price * item.quantity).toLocaleString()}
                       </p>
+                      <button
+                        onClick={() => handleDeleteItemFromCart(item.id)}
+                        className="text-red-500 bg-red-50 p-2 rounded-lg active:scale-95 transition-all md:hidden"
+                        title="Remove item"
+                      >
+                        <Trash2Icon size={16} />
+                      </button>
                     </div>
                   </td>
-                  <td className="text-center">
-                    <Counter productId={item.id} />
-                  </td>
-                  <td className="text-center">
-                    {currency}
-                    {(item.price * item.quantity).toLocaleString()}
-                  </td>
-                  <td className="text-center max-md:hidden">
+                  <td className="text-center py-4 max-md:hidden">
                     <button
                       onClick={() => handleDeleteItemFromCart(item.id)}
-                      className=" text-red-500 hover:bg-red-50 p-2.5 rounded-full active:scale-95 transition-all"
+                      className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl active:scale-95 transition-all"
+                      title="Remove item"
                     >
-                      <Trash2Icon size={18} />
+                      <Trash2Icon size={20} />
                     </button>
                   </td>
                 </tr>
@@ -126,8 +150,15 @@ export default function Cart() {
       </div>
     </div>
   ) : (
-    <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
+    <div className="min-h-[80vh] mx-6 flex flex-col gap-4 items-center justify-center text-slate-400">
       <h1 className="text-2xl sm:text-4xl font-semibold">Your cart is empty</h1>
+      <Link
+        href="/shop"
+        className="text-pink-600 font-bold underline flex items-center gap-1"
+      >
+        <ShoppingCart size={16} />
+        Go to shop
+      </Link>
     </div>
   );
 }

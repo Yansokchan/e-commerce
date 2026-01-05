@@ -42,7 +42,7 @@ export default function CartSynchronizer() {
       // Note: this might override server if multiple tabs are open and one is stale.
       // Real-time sync needs Supabase subscriptions, but this is a simple "save" mechanism.
       dispatch(syncCart({ userId: user.id, cartItems }));
-    }, 2000); // 2 second debounce
+    }, 1000); // 1 second debounce
 
     return () => clearTimeout(timeoutId);
   }, [cartItems, user, dispatch]);

@@ -23,6 +23,7 @@ create table orders (
   total numeric not null,
   status text default 'pending',
   phone text,
+  location text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 

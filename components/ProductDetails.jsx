@@ -14,6 +14,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Counter from "./Counter";
 import { useDispatch, useSelector } from "react-redux";
+import RippleButton from "./ui/ripple-button";
+import ImageZoom from "./ImageZoom";
 
 const ProductDetails = ({ product }) => {
   const productId = product.id;
@@ -35,11 +37,6 @@ const ProductDetails = ({ product }) => {
     dispatch(addToCart({ productId }));
   };
 
-  const averageRating = product.rating?.length
-    ? product.rating.reduce((acc, item) => acc + item.rating, 0) /
-      product.rating.length
-    : 0;
-
   return (
     <div className="flex max-lg:flex-col gap-12">
       <div className="flex max-sm:flex-col-reverse gap-3">
@@ -48,7 +45,7 @@ const ProductDetails = ({ product }) => {
             <div
               key={index}
               onClick={() => setMainImage(product.images[index])}
-              className="bg-slate-100 flex items-center justify-center size-26 rounded-lg group cursor-pointer"
+              className="bg-pink-50/50 border border-white/50 shadow-md shadow-slate-200/80 flex items-center justify-center size-26 rounded-lg group cursor-pointer"
             >
               <Image
                 src={image}
@@ -60,8 +57,8 @@ const ProductDetails = ({ product }) => {
             </div>
           ))}
         </div>
-        <div className="flex justify-center items-center h-100 sm:size-113 bg-slate-100 rounded-lg ">
-          <Image src={mainImage} alt="" width={250} height={250} />
+        <div className="relative flex justify-center items-center h-100 sm:size-113 bg-pink-50/50 border border-white/50 shadow-md shadow-slate-200/80 rounded-lg overflow-hidden">
+          <ImageZoom src={mainImage} alt={product.name} />
         </div>
       </div>
       <div className="flex-1">
@@ -79,7 +76,10 @@ const ProductDetails = ({ product }) => {
             <p className="text-red-600 font-medium">Out of Stock</p>
           )}
         </div>
-        <div className="flex items-start my-6 gap-3 text-2xl font-semibold text-slate-800">
+        <div className="my-2">
+          <p className="text-slate-700">{product.description}</p>
+        </div>
+        <div className="flex items-start my-4 gap-3 text-2xl font-semibold text-slate-800">
           <p>
             {" "}
             {currency}
@@ -98,14 +98,14 @@ const ProductDetails = ({ product }) => {
             right now
           </p>
         </div>
-        <div className="flex items-end gap-5 mt-10">
+        <div className="flex flex-row-reverse justify-end items-start gap-5 mt-4">
           {cart[productId] && (
-            <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
               <p className="text-lg text-slate-800 font-semibold">Quantity</p>
               <Counter productId={productId} />
             </div>
           )}
-          <button
+          <RippleButton
             onClick={() => {
               if (product.stock > 0) {
                 !cart[productId] ? addToCartHandler() : router.push("/cart");
@@ -115,7 +115,7 @@ const ProductDetails = ({ product }) => {
             className={`px-10 py-3 text-sm font-medium rounded transition ${
               product.stock <= 0 && !cart[productId]
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-slate-800 hover:bg-slate-900 active:scale-95 text-white"
+                : "bg-gradient-to-r from-pink-500 to-pink-400 active:scale-95 text-white"
             }`}
           >
             {product.stock <= 0 && !cart[productId]
@@ -123,21 +123,21 @@ const ProductDetails = ({ product }) => {
               : !cart[productId]
               ? "Add to Cart"
               : "View Cart"}
-          </button>
+          </RippleButton>
         </div>
         <hr className="border-gray-300 my-5" />
-        <div className="flex flex-col gap-4 text-slate-500">
+        <div className="flex flex-col gap-4 text-slate-600">
           <p className="flex gap-3">
             {" "}
-            <EarthIcon className="text-slate-400" /> Free shipping worldwide{" "}
+            <EarthIcon className="text-slate-500" /> Free shipping in Cambodia{" "}
           </p>
           <p className="flex gap-3">
             {" "}
-            <CreditCardIcon className="text-slate-400" /> 100% Secured Payment{" "}
+            <CreditCardIcon className="text-slate-500" /> 100% Secured Payment{" "}
           </p>
           <p className="flex gap-3">
             {" "}
-            <UserIcon className="text-slate-400" /> Trusted by top brands{" "}
+            <UserIcon className="text-slate-500" /> Trusted by top brands{" "}
           </p>
         </div>
       </div>
