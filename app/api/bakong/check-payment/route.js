@@ -183,8 +183,6 @@ export async function GET() {
     status: "ok",
     message: "Bakong Check Payment Service is Running",
     env: {
-      hasMerchantId: !!process.env.BAKONG_MERCHANT_ID,
-      hasSecret: !!process.env.BAKONG_SECRET,
       hasAccountId: !!process.env.BAKONG_ACCOUNT_ID,
       baseUrl:
         process.env.BAKONG_BASE_URL ||
