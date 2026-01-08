@@ -15,8 +15,10 @@ export async function POST(request) {
       return NextResponse.json({ error: "MD5 is required" }, { status: 400 });
     }
 
-    const BAKONG_BASE_URL =
+    const RAW_BASE_URL =
       process.env.BAKONG_BASE_URL || "https://api-bakong.nbc.gov.kh/v1";
+    // Remove trailing slash if present to avoid double slashes
+    const BAKONG_BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
 
     // Get Dynamic Token
     let accessToken;
@@ -29,14 +31,18 @@ export async function POST(request) {
       );
     }
 
+    const checkUrl = `${BAKONG_BASE_URL}/check_transaction_by_md5`;
+    console.log(`Checking Payment at: ${checkUrl} for MD5: ${md5}`);
+
     // Call Bakong API to check payment
     const response = await axios.post(
-      `${BAKONG_BASE_URL}/check_transaction_by_md5`,
+      checkUrl,
       { md5 },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
+          Accept: "application/json",
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         },
