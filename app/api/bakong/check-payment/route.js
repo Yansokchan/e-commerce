@@ -4,6 +4,21 @@ import { getBakongAuth } from "@/lib/bakong";
 
 export async function POST(request) {
   try {
+    return await handlePost(request);
+  } catch (fatalError) {
+    console.error("FATAL API ERROR:", fatalError);
+    return NextResponse.json(
+      {
+        error: "Fatal Internal Error",
+        message: fatalError.message,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+async function handlePost(request) {
+  try {
     const {
       md5,
       amount: expectedAmount,
@@ -123,49 +138,12 @@ export async function POST(request) {
       });
     }
   } catch (error) {
-    // Enhanced Error Logging
-    console.error(
-      "Bakong check-payment exception:",
-      error.message,
-      "Status:",
-      error.response?.status
-    );
+    console.error("Bakong Check Error:", error.message);
 
-    if (error.response?.data) {
-      console.error(
-        "Upstream Data:",
-        typeof error.response.data === "string"
-          ? error.response.data.substring(0, 200)
-          : JSON.stringify(error.response.data)
-      );
-    }
-
-    // If it's a 404 from Bakong, handle it gracefully
-    if (error.response?.status === 404) {
-      return NextResponse.json({
-        success: false,
-        message: "Transaction not found",
-      });
-    }
-
-    // Check for HTML response (CloudFront Block, etc.)
-    // With fetch, if response.ok is false, we might not have thrown yet depending on logic,
-    // but here we are in catch block so error is real.
-    // However, native fetch doesn't throw on 403/500, so we likely failed parsing JSON above.
-
-    // We need to handle non-ok responses separately if using fetch.
-    // Actually, let's allow fetch to return normally if 403, and handle it in logic.
-    // But since I did `await response.json()`, if body is HTML, it throws SyntaxError.
-
-    // So simpler: Update correct logic above. But for now in catch block:
-    if (
-      accessToken &&
-      (error.name === "SyntaxError" || // Likely HTML response parsed as JSON
-        error.message.includes("Unexpected token"))
-    ) {
-      console.warn(
-        "Upstream Blocked (JSON Parse Error). Falling back to Client-Side Check."
-      );
+    // If we have an accessToken, we can try client fallback for ANY upstream error
+    // (SyntaxError from HTML response, Network Error, etc.)
+    if (accessToken) {
+      console.warn("Upstream Blocked/Failed. Returning Client Fallback.");
       return NextResponse.json({
         success: false,
         requiresClientCheck: true,
@@ -174,32 +152,7 @@ export async function POST(request) {
       });
     }
 
-    const errorData = error.message;
-    if (
-      accessToken &&
-      // previous catch logic fallback
-      (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))
-    ) {
-      console.warn("Upstream Blocked. Falling back to Client-Side Check.");
-      return NextResponse.json({
-        success: false,
-        requiresClientCheck: true,
-        accessToken: accessToken,
-        checkUrl: `${BAKONG_BASE_URL}/check_transaction_by_md5`,
-      });
-    }
-
-    return NextResponse.json(
-      {
-        error: "Internal error checking payment",
-        message: error.message,
-        details:
-          typeof errorData === "string"
-            ? errorData
-            : errorData || error.message,
-      },
-      { status: 500 }
-    );
+    throw error; // If no token, we can't do fallback, so fatal error.
   }
 }
 
