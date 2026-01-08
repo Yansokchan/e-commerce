@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { getBakongToken } from "@/lib/bakong";
+import { getBakongToken, getBakongAuth } from "@/lib/bakong";
 
 export async function POST(request) {
   try {
@@ -20,10 +20,12 @@ export async function POST(request) {
     // Remove trailing slash if present to avoid double slashes
     const BAKONG_BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
 
-    // Get Dynamic Token
-    let accessToken;
+    // Get Dynamic Token & Cookies
+    let accessToken, cookies;
     try {
-      accessToken = await getBakongToken();
+      const authData = await getBakongAuth();
+      accessToken = authData.token;
+      cookies = authData.cookies;
     } catch (tokenErr) {
       return NextResponse.json(
         { error: "Bakong Auth Failed", details: tokenErr.message },
@@ -43,6 +45,7 @@ export async function POST(request) {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           Accept: "application/json",
+          Cookie: cookies ? cookies.join("; ") : "",
           Origin: "https://bakong.nbc.gov.kh",
           Referer: "https://bakong.nbc.gov.kh/",
           "User-Agent":
