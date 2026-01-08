@@ -37,29 +37,27 @@ export async function POST(request) {
     console.log(`Checking Payment at: ${checkUrl} for MD5: ${md5}`);
 
     // Call Bakong API to check payment
-    const response = await axios.post(
-      checkUrl,
-      { md5 },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json, text/plain, */*",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Cache-Control": "no-cache",
-          Cookie: cookies ? cookies.join("; ") : "",
-          Origin: "https://bakong.nbc.gov.kh",
-          Referer: "https://bakong.nbc.gov.kh/",
-          "Sec-Fetch-Dest": "empty",
-          "Sec-Fetch-Mode": "cors",
-          "Sec-Fetch-Site": "same-origin",
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        },
-      }
-    );
+    const response = await fetch(checkUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Cache-Control": "no-cache",
+        Cookie: cookies ? cookies.join("; ") : "",
+        Origin: "https://bakong.nbc.gov.kh",
+        Referer: "https://bakong.nbc.gov.kh/",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+      body: JSON.stringify({ md5 }),
+    });
 
-    const data = response.data;
+    const data = await response.json();
     // console.log("Bakong Raw Response for MD5", md5, ":", JSON.stringify(data));
 
     // responseCode 0 means success in Bakong API
@@ -154,13 +152,36 @@ export async function POST(request) {
     }
 
     // Check for HTML response (CloudFront Block, etc.)
-    const errorData = error.response?.data;
+    // With fetch, if response.ok is false, we might not have thrown yet depending on logic,
+    // but here we are in catch block so error is real.
+    // However, native fetch doesn't throw on 403/500, so we likely failed parsing JSON above.
+
+    // We need to handle non-ok responses separately if using fetch.
+    // Actually, let's allow fetch to return normally if 403, and handle it in logic.
+    // But since I did `await response.json()`, if body is HTML, it throws SyntaxError.
+
+    // So simpler: Update correct logic above. But for now in catch block:
     if (
       accessToken &&
-      ((typeof errorData === "string" &&
-        (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))) ||
-        error.response?.status === 502 ||
-        error.response?.status === 403)
+      (error.name === "SyntaxError" || // Likely HTML response parsed as JSON
+        error.message.includes("Unexpected token"))
+    ) {
+      console.warn(
+        "Upstream Blocked (JSON Parse Error). Falling back to Client-Side Check."
+      );
+      return NextResponse.json({
+        success: false,
+        requiresClientCheck: true,
+        accessToken: accessToken,
+        checkUrl: `${BAKONG_BASE_URL}/check_transaction_by_md5`,
+      });
+    }
+
+    const errorData = error.message;
+    if (
+      accessToken &&
+      // previous catch logic fallback
+      (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))
     ) {
       console.warn("Upstream Blocked. Falling back to Client-Side Check.");
       return NextResponse.json({
