@@ -81,7 +81,14 @@ export default function BakongQRModal({
             // Wait, standard fetch flow:
           }
 
-          const data = await res.json();
+          let data;
+          try {
+            data = await res.json();
+          } catch (jsonErr) {
+            console.error("Invalid JSON from server:", jsonErr);
+            // If server returns 500 HTML (e.g. Vercel error), we skip this poll
+            return;
+          }
 
           // HANDLE CLIENT SIDE FALLBACK
           if (data.requiresClientCheck && data.accessToken && data.checkUrl) {
