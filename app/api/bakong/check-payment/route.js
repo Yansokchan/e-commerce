@@ -57,13 +57,7 @@ async function handlePost(request) {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
-        Accept: "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Cache-Control": "no-cache",
-        Origin: "https://bakong.nbc.gov.kh",
-        Referer: "https://bakong.nbc.gov.kh/",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        // Minimum headers to look like a standard API client, not a browser spoof
       },
       body: JSON.stringify({ md5 }),
     });
