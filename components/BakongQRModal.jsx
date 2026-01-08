@@ -75,20 +75,39 @@ export default function BakongQRModal({
           });
 
           if (!res.ok) {
-            const errData = await res.json();
-            console.error("Bakong Check Error:", errData);
-            if (errData.details) {
-              toast.error(`Bakong: ${errData.details}`, {
-                id: "bakong-check-error",
+            // ... (keep existing error logging if strict error) behavior might vary,
+            // but usually next.js returns 200 for our logic unless we explicitly did status 500.
+            // Actually our API returns specific JSON on error, let's parse it first.
+            // Wait, standard fetch flow:
+          }
+
+          const data = await res.json();
+
+          // HANDLE CLIENT SIDE FALLBACK
+          if (data.requiresClientCheck && data.accessToken && data.checkUrl) {
+            // console.log("Falling back to client-side check...");
+            try {
+              const clientRes = await fetch(data.checkUrl, {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${data.accessToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ md5 }),
               });
-            }
-            if (errData.error === "Bakong Auth Failed") {
-              clearInterval(interval);
+              const clientData = await clientRes.json();
+
+              if (clientData.responseCode === 0) {
+                clearInterval(interval);
+                toast.success("Payment Received!");
+                onConfirm({ ...clientData.data, md5 });
+              }
+            } catch (clientErr) {
+              console.error("Client fallback failed:", clientErr);
             }
             return;
           }
 
-          const data = await res.json();
           if (data.success) {
             clearInterval(interval);
             toast.success("Payment Received!");

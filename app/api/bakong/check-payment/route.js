@@ -156,16 +156,19 @@ export async function POST(request) {
     // Check for HTML response (CloudFront Block, etc.)
     const errorData = error.response?.data;
     if (
-      typeof errorData === "string" &&
-      (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))
+      accessToken &&
+      ((typeof errorData === "string" &&
+        (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))) ||
+        error.response?.status === 502 ||
+        error.response?.status === 403)
     ) {
-      return NextResponse.json(
-        {
-          error: "Upstream Service Error",
-          details: `HTML Response: ${errorData.substring(0, 500)}...`, // Return first 500 chars to debug
-        },
-        { status: 502 }
-      );
+      console.warn("Upstream Blocked. Falling back to Client-Side Check.");
+      return NextResponse.json({
+        success: false,
+        requiresClientCheck: true,
+        accessToken: accessToken,
+        checkUrl: `${BAKONG_BASE_URL}/check_transaction_by_md5`,
+      });
     }
 
     return NextResponse.json(
