@@ -18,6 +18,11 @@ export async function POST(request) {
 }
 
 async function handlePost(request) {
+  let accessToken = null;
+  const RAW_BASE_URL =
+    process.env.BAKONG_BASE_URL || "https://api-bakong.nbc.gov.kh/v1";
+  const BAKONG_BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
+
   try {
     const {
       md5,
@@ -30,13 +35,8 @@ async function handlePost(request) {
       return NextResponse.json({ error: "MD5 is required" }, { status: 400 });
     }
 
-    const RAW_BASE_URL =
-      process.env.BAKONG_BASE_URL || "https://api-bakong.nbc.gov.kh/v1";
-    // Remove trailing slash if present to avoid double slashes
-    const BAKONG_BASE_URL = RAW_BASE_URL.replace(/\/$/, "");
-
     // Get Dynamic Token & Cookies
-    let accessToken, cookies;
+    let cookies;
     try {
       const authData = await getBakongAuth();
       accessToken = authData.token;
