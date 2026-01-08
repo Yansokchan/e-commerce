@@ -37,6 +37,8 @@ export async function POST(request) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         },
       }
     );
@@ -106,8 +108,22 @@ export async function POST(request) {
       });
     }
   } catch (error) {
-    const errorMsg = error.response?.data || error.message;
-    console.error("Bakong check-payment exception:", JSON.stringify(errorMsg));
+    // Enhanced Error Logging
+    console.error(
+      "Bakong check-payment exception:",
+      error.message,
+      "Status:",
+      error.response?.status
+    );
+
+    if (error.response?.data) {
+      console.error(
+        "Upstream Data:",
+        typeof error.response.data === "string"
+          ? error.response.data.substring(0, 200)
+          : JSON.stringify(error.response.data)
+      );
+    }
 
     // If it's a 404 from Bakong, handle it gracefully
     if (error.response?.status === 404) {
@@ -117,11 +133,26 @@ export async function POST(request) {
       });
     }
 
+    // Check for HTML response (CloudFront Block, etc.)
+    const errorData = error.response?.data;
+    if (typeof errorData === "string" && errorData.includes("<HTML>")) {
+      return NextResponse.json(
+        {
+          error: "Upstream Service Error",
+          details:
+            "The payment gateway returned an invalid response (HTML). Please try again later.",
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Internal error",
         details:
-          typeof errorMsg === "string" ? errorMsg : JSON.stringify(errorMsg),
+          typeof errorData === "string"
+            ? errorData
+            : JSON.stringify(errorData || error.message),
       },
       { status: 500 }
     );
