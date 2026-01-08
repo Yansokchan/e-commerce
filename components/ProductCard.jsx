@@ -17,7 +17,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link href={`/product/${product.id}`} className="group block w-full">
-      <div className="bg-pink-50/50 border border-white/50 shadow shadow-slate-200/80 w-full aspect-[4/5] sm:aspect-[3/4] rounded-lg flex items-center justify-center overflow-hidden">
+      <div className="clay-element bg-pink-50/10 border border-white/50 shadow shadow-slate-200/80 w-full aspect-[4/5] sm:aspect-[3/4] rounded-lg flex items-center justify-center overflow-hidden">
         <Image
           width={500}
           height={500}

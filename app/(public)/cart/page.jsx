@@ -90,7 +90,7 @@ export default function Cart() {
                   <td className="py-4">
                     <div className="flex gap-3 items-center">
                       {/* Standardized Image Container */}
-                      <div className="flex-shrink-0 bg-slate-100 size-16 md:size-20 rounded-xl overflow-hidden relative border border-slate-200/50">
+                      <div className="flex-shrink-0 bg-slate-100/40 clay-element size-16 md:size-20 rounded-xl overflow-hidden relative border border-slate-200/50">
                         <Image
                           src={item.images?.[0] || "/placeholder.png"}
                           className="object-cover"
@@ -125,7 +125,7 @@ export default function Cart() {
                       </p>
                       <button
                         onClick={() => handleDeleteItemFromCart(item.id)}
-                        className="text-red-500 bg-red-50 p-2 rounded-lg active:scale-95 transition-all md:hidden"
+                        className="text-red-500 bg-red-50/50 p-2 clay-element rounded-full active:scale-95 transition-all md:hidden"
                         title="Remove item"
                       >
                         <Trash2Icon size={16} />
@@ -135,7 +135,7 @@ export default function Cart() {
                   <td className="text-center py-4 max-md:hidden">
                     <button
                       onClick={() => handleDeleteItemFromCart(item.id)}
-                      className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2.5 rounded-xl active:scale-95 transition-all"
+                      className="text-red-500 bg-red-50/50 hover:text-red-500 clay-element hover:bg-red-50 p-2.5 rounded-full active:scale-95 transition-all"
                       title="Remove item"
                     >
                       <Trash2Icon size={20} />

@@ -41,7 +41,7 @@ const OrderItem = ({ order }) => {
             {order.items.map((item, index) => (
               <div key={index} className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="size-16 bg-slate-100 flex items-center justify-center rounded-md overflow-hidden relative">
+                  <div className="flex-shrink-0 bg-slate-100/40 clay-element size-16 md:size-20 rounded-xl overflow-hidden relative border border-slate-200/50">
                     <Image
                       className="object-cover"
                       src={item.images?.[0] || "/placeholder.png"}
@@ -58,7 +58,14 @@ const OrderItem = ({ order }) => {
                       {item.price} x {item.quantity}
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
-                      {new Date(order.created_at).toDateString()}
+                      {new Date(order.created_at).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>
@@ -76,9 +83,9 @@ const OrderItem = ({ order }) => {
           <p>{order.location}</p>
         </td>
 
-        <td className="text-left flex flex-col items-start space-y-2 text-sm max-md:hidden align-top">
+        <td className="text-right max-md:hidden align-top">
           <div
-            className={`flex items-center justify-center gap-1 rounded-full px-2 py-1 w-fit ${
+            className={`inline-flex items-center justify-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
               order.status === "confirmed" || order.status === "delivered"
                 ? "text-green-600 bg-green-100"
                 : order.status === "failed"
@@ -88,30 +95,33 @@ const OrderItem = ({ order }) => {
           >
             <span className="capitalize">{order.status}</span>
           </div>
-          <RippleButton
+        </td>
+
+        <td className="text-right max-md:hidden align-top">
+          <button
             onClick={handleDownloadReceipt}
             disabled={downloading}
-            className="flex items-center justify-center gap-1.5 text-pink-600 font-bold hover:text-pink-700 transition-colors mt-1 -ml-3 text-sm hover:underline"
+            className="inline-flex glass-btn items-center justify-center gap-1.5 px-4 rounded-full py-2 text-pink-600 font-bold hover:text-pink-700 hover:bg-pink-50 transition-all text-xs"
           >
             {downloading ? (
-              <div className="flex items-center gap-1">
-                <Loader2 className="animate-spin" size={12} />
-                Downloading...
-              </div>
+              <>
+                <Loader2 className="animate-spin" size={14} />
+                <span>Loading...</span>
+              </>
             ) : (
-              <div className="flex items-center gap-1">
-                <Download size={12} />
-                Download Receipt
-              </div>
+              <>
+                <Download size={14} />
+                <span>Receipt</span>
+              </>
             )}
-          </RippleButton>
+          </button>
         </td>
       </tr>
 
       {/* Mobile View */}
       <tr className="md:hidden">
         <td colSpan={4} className="pb-8 pt-2">
-          <div className="flex flex-col gap-3 bg-gradient-to-tr from-pink-200/60 to-pink-100/60 p-4 rounded-xl ring ring-offset ring-white/50 shadow-md">
+          <div className="flex flex-col gap-3 clay-element bg-gradient-to-tr from-slate-100/40 to-slate-50/40 p-4 rounded-xl ring ring-offset ring-white/50 shadow-md">
             <div className="flex justify-between items-start">
               <div className="space-y-1">
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">
@@ -151,10 +161,10 @@ const OrderItem = ({ order }) => {
               </p>
             </div>
 
-            <RippleButton
+            <button
               onClick={handleDownloadReceipt}
               disabled={downloading}
-              className="w-full mt-1 bg-white ring ring-offset ring-white/50 text-pink-500 text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2 shadow-md"
+              className="w-full mt-1 glass-btn text-pink-600 text-xs font-bold py-2 rounded-full flex items-center justify-center gap-2 shadow-md"
             >
               {downloading ? (
                 <div className="flex items-center gap-2">
@@ -167,7 +177,7 @@ const OrderItem = ({ order }) => {
                   Download Receipt
                 </div>
               )}
-            </RippleButton>
+            </button>
           </div>
         </td>
       </tr>
@@ -277,7 +287,7 @@ const OrderItem = ({ order }) => {
       </tr>
 
       <tr>
-        <td colSpan={4}>
+        <td colSpan={5}>
           <div className="border-b border-slate-200 w-full -mt-12" />
         </td>
       </tr>

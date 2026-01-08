@@ -45,7 +45,7 @@ const ProductDetails = ({ product }) => {
             <div
               key={index}
               onClick={() => setMainImage(product.images[index])}
-              className="bg-pink-50/50 border border-white/50 shadow-md shadow-slate-200/80 flex items-center justify-center size-26 rounded-lg group cursor-pointer"
+              className="clay-element bg-pink-50/10 border border-white/50 shadow-md shadow-slate-200/80 flex items-center justify-center size-26 rounded-lg group cursor-pointer"
             >
               <Image
                 src={image}
@@ -57,7 +57,7 @@ const ProductDetails = ({ product }) => {
             </div>
           ))}
         </div>
-        <div className="relative flex justify-center items-center h-100 sm:size-113 bg-pink-50/50 border border-white/50 shadow-md shadow-slate-200/80 rounded-lg overflow-hidden">
+        <div className="relative flex justify-center items-center h-100 sm:size-113 clay-element bg-pink-50/50 border border-white/50 shadow-md shadow-slate-200/80 rounded-lg overflow-hidden">
           <ImageZoom src={mainImage} alt={product.name} />
         </div>
       </div>
@@ -98,32 +98,32 @@ const ProductDetails = ({ product }) => {
             right now
           </p>
         </div>
-        <div className="flex flex-row-reverse justify-end items-start gap-5 mt-4">
+        <div className="flex flex-row-reverse justify-end items-center gap-5 mt-4">
           {cart[productId] && (
             <div className="flex items-center gap-3">
               <p className="text-lg text-slate-800 font-semibold">Quantity</p>
               <Counter productId={productId} />
             </div>
           )}
-          <RippleButton
+          <button
             onClick={() => {
               if (product.stock > 0) {
                 !cart[productId] ? addToCartHandler() : router.push("/cart");
               }
             }}
             disabled={product.stock <= 0 && !cart[productId]}
-            className={`px-10 py-3 text-sm font-medium rounded transition ${
-              product.stock <= 0 && !cart[productId]
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-pink-500 to-pink-400 active:scale-95 text-white"
+            className={`px-8 max-w-40 glass-btn text-pink-500 py-3 text-sm font-medium rounded-full ${
+              product.stock <= 0 &&
+              !cart[productId] &&
+              "bg-gray-400 cursor-not-allowed"
             }`}
           >
             {product.stock <= 0 && !cart[productId]
               ? "Out of Stock"
               : !cart[productId]
               ? "Add to Cart"
-              : "View Cart"}
-          </RippleButton>
+              : "Go to Cart"}
+          </button>
         </div>
         <hr className="border-gray-300 my-5" />
         <div className="flex flex-col gap-4 text-slate-600">

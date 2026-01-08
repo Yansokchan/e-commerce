@@ -63,15 +63,17 @@ export default function Orders() {
 
   return (
     <div className="min-h-[70vh] mx-6">
-      <PageTitle
-        heading="My Orders"
-        text={
-          loading
-            ? "Loading your orders..."
-            : `Showing ${orders.length} latest orders`
-        }
-        linkText={"Go to home"}
-      />
+      <div className="ml-3">
+        <PageTitle
+          heading="My Orders"
+          text={
+            loading
+              ? "Loading your orders..."
+              : `Showing ${orders.length} latest orders`
+          }
+          linkText={"Go to home"}
+        />
+      </div>
 
       {loading ? (
         <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4 text-slate-400">
@@ -83,10 +85,11 @@ export default function Orders() {
           <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
             <thead>
               <tr className="max-sm:text-sm text-slate-600 max-md:hidden">
-                <th className="text-left">Product</th>
-                <th className="text-center">Total Price</th>
-                <th className="text-left">Address</th>
-                <th className="text-left">Status</th>
+                <th className="text-left w-[45%]">Product</th>
+                <th className="text-center w-[15%]">Total Price</th>
+                <th className="text-left w-[20%]">Address</th>
+                <th className="text-center w-[10%]">Status</th>
+                <th className="text-center w-[10%]">Receipt</th>
               </tr>
             </thead>
             <tbody>
@@ -98,10 +101,10 @@ export default function Orders() {
 
           {hasMore && (
             <div className="flex justify-center">
-              <RippleButton
+              <button
                 onClick={handleLoadMore}
                 disabled={loadingMore}
-                className="bg-gradient-to-r from-pink-600 to-pink-500 shadow-xl ring ring-offset ring-white/50 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-pink-50 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="glass-btn text-pink-600 px-8 py-2.5 rounded-full font-bold hover:bg-pink-50 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loadingMore ? (
                   <div className="flex items-center gap-2">
@@ -111,7 +114,7 @@ export default function Orders() {
                 ) : (
                   "See More"
                 )}
-              </RippleButton>
+              </button>
             </div>
           )}
         </div>

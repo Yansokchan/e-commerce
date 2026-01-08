@@ -88,7 +88,7 @@ export default function LoginModal() {
           <RippleButton
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 px-4 py-3 text-sm font-medium text-white shadow-xl focus:outline-none transition-all disabled:opacity-50 ring-1 ring-inset ring-white/20"
+            className="flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-br from-pink-600 to-pink-500 px-4 py-3 text-sm font-medium text-white shadow-xl focus:outline-none transition-all disabled:opacity-50 ring-1 ring-inset ring-white/20"
           >
             <div className="flex items-center justify-center gap-2 w-full px-4">
               {loading ? (

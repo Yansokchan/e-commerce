@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { clearCart } from "@/lib/features/cart/cartSlice"; // Assuming this action exists or I check slice
-import { Loader2, ShoppingCart } from "lucide-react";
+import { clearCart } from "@/lib/features/cart/cartSlice";
+import { Loader2, ShoppingCart, CreditCard, Send } from "lucide-react";
 import RippleButton from "@/components/ui/ripple-button";
 import Link from "next/link";
+
+import BakongQRModal from "@/components/BakongQRModal";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -17,18 +19,23 @@ export default function CheckoutPage() {
   const { cartItems } = useSelector((state) => state.cart);
   const products = useSelector((state) => state.product.list);
 
-  // const [phone, setPhone] = useState(""); // Removed manual phone input
   const [loading, setLoading] = useState(false);
   const [cartArray, setCartArray] = useState([]);
   const [total, setTotal] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("bakong"); // Default to bakong
+  const [showBakongModal, setShowBakongModal] = useState(false);
+  const [qrString, setQrString] = useState("");
+  const [qrMd5, setQrMd5] = useState("");
+  const [qrExpiration, setQrExpiration] = useState(null);
+  const [qrAmount, setQrAmount] = useState(0);
+  const [qrGenerationTime, setQrGenerationTime] = useState(null);
 
-  // Hydrate cart data
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Hydrate cart data
   useEffect(() => {
-    if (isSuccess) return; // Stop updating if order is successful (prevents empty flash)
+    if (isSuccess) return;
     if (products.length > 0) {
       const arr = [];
       let t = 0;
@@ -44,14 +51,11 @@ export default function CheckoutPage() {
     }
   }, [cartItems, products, isSuccess]);
 
-  // Get user from Redux state (synced with Supabase via AuthProvider)
   const { user } = useSelector((state) => state.auth);
 
-  // Original submit logic, now called after confirmation
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (bakongData = null) => {
     setLoading(true);
 
-    // Use stored phone and address
     const phone = user?.user_metadata?.phone;
     const address = user?.user_metadata?.location;
 
@@ -65,6 +69,8 @@ export default function CheckoutPage() {
           items: cartArray,
           total,
           user,
+          payment_method: paymentMethod,
+          bakongData: bakongData instanceof Event ? null : bakongData, // Prevent Event object from being passed
         }),
       });
 
@@ -74,19 +80,66 @@ export default function CheckoutPage() {
         throw new Error(data.error || "Order failed");
       }
 
-      // Order success
+      // If we are already showing the modal (for Bakong), and we don't have confirmation data yet, don't redirect
+      if (paymentMethod === "bakong" && !bakongData && !isSuccess) {
+        setLoading(false);
+        return;
+      }
+
+      // Success for Telegram
       setIsSuccess(true);
       setShowConfirmModal(false);
-      toast.success("Order sent to Telegram!");
+      setShowBakongModal(false);
+      toast.success("Order placed successfully!");
       dispatch(clearCart());
 
-      // Redirect to success page
       router.push(`/orders/success/${data.orderId}`);
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Something went wrong");
-      setLoading(false); // Only stop loading if error
+      setLoading(false);
     }
+  };
+
+  const fetchBakongQR = (isRefresh = false) => {
+    // Check if we already have a valid QR for this amount (unless it's a refresh)
+    if (
+      !isRefresh &&
+      qrString &&
+      qrAmount === total &&
+      qrExpiration &&
+      qrExpiration > Date.now() + 10000 // At least 10s left
+    ) {
+      setShowBakongModal(true);
+      return;
+    }
+
+    setLoading(true);
+    fetch("/api/bakong/generate-khqr", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: total, currency: "KHR" }),
+    })
+      .then((res) => res.json())
+      .then((resData) => {
+        setLoading(false);
+        if (resData.success) {
+          const bData = resData.data;
+          setQrString(bData.qr);
+          setQrMd5(bData.md5);
+          setQrExpiration(bData.expiration);
+          setQrAmount(total);
+          setQrGenerationTime(bData.generationTime);
+          setShowBakongModal(true);
+        } else {
+          toast.error("Failed to generate QR code");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Error generating QR");
+        setLoading(false);
+      });
   };
 
   const handlePreSubmit = () => {
@@ -100,8 +153,12 @@ export default function CheckoutPage() {
       toast.error("Please update your address in your profile to proceed.");
       return;
     }
-    // Open confirmation modal
-    setShowConfirmModal(true);
+
+    if (paymentMethod === "bakong") {
+      fetchBakongQR(false);
+    } else {
+      setShowConfirmModal(true);
+    }
   };
 
   if (cartArray.length === 0) {
@@ -122,9 +179,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 relative">
-      <div className="max-w-md mx-auto bg-white rounded-xl ring-1 ring-offset ring-white/30 shadow-xl overflow-hidden md:max-w-2xl p-6">
-        <h2 className="text-2xl font-bold mb-6 text-pink-600">Checkout</h2>
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative">
+      <div className="max-w-md mx-auto clay-element rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden md:max-w-2xl p-6">
+        <h2 className="text-2xl font-bold mb-6 text-pink-600 text">Checkout</h2>
 
         <div className="mb-6">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Items</h3>
@@ -132,7 +189,7 @@ export default function CheckoutPage() {
             {cartArray.map((item) => (
               <div key={item.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="relative h-12 w-12 rounded overflow-hidden">
+                  <div className="flex-shrink-0 bg-slate-100 clay-element size-16 md:size-20 rounded-xl overflow-hidden relative border border-slate-200/50">
                     <Image
                       src={item.images?.[0] || "/placeholder.png"}
                       alt={item.name}
@@ -141,7 +198,9 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{item.name}</p>
+                    <p className="font-medium text-gray-900 text-sm md:text-base truncate max-w-[120px] sm:max-w-none">
+                      {item.name}
+                    </p>
                     <p className="text-sm text-gray-500">
                       Qty: {item.quantity}
                     </p>
@@ -159,8 +218,61 @@ export default function CheckoutPage() {
           </div>
         </div>
 
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Payment Method
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button
+              onClick={() => setPaymentMethod("bakong")}
+              className={`flex active:scale-95 clay-element items-center gap-3 p-4 rounded-full ${
+                paymentMethod === "bakong"
+                  ? "border-red-500 bg-red-50 text-red-700 shadow-md ring-1 ring-red-200"
+                  : " text-slate-600 "
+              }`}
+            >
+              <div
+                className={`p-2 rounded-full clay-element ${
+                  paymentMethod === "bakong"
+                    ? "bg-red-200/80 text-red-700"
+                    : "bg-slate-100"
+                }`}
+              >
+                <CreditCard size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-sm">Bakong KHQR</p>
+                <p className="text-[10px] opacity-70">Pay Now with Bank App</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setPaymentMethod("telegram")}
+              className={`flex active:scale-95 clay-element rounded-full items-center gap-3 p-4 transition-all ${
+                paymentMethod === "telegram"
+                  ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md ring-1 ring-blue-200"
+                  : " text-slate-600 "
+              }`}
+            >
+              <div
+                className={`p-2 rounded-full clay-element ${
+                  paymentMethod === "telegram"
+                    ? "bg-blue-200/80 text-blue-700"
+                    : "bg-slate-100"
+                }`}
+              >
+                <Send size={20} />
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-sm">Via Telegram</p>
+                <p className="text-[10px] opacity-70">Confirm with Owner</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-6">
-          <div className="bg-gradient-to-tl from-pink-200/60 to-pink-100/60 shadow-sm ring ring-inset ring-white/30 p-4 rounded-lg text-sm text-slate-600">
+          <div className=" text-sm text-slate-600">
             <p className="font-medium mb-2 text-slate-800">Your Details:</p>
             <p>Name: {user?.user_metadata?.full_name}</p>
             <p>
@@ -183,19 +295,34 @@ export default function CheckoutPage() {
           <RippleButton
             onClick={handlePreSubmit}
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 rounded-lg text-sm font-medium text-white bg-gradient-to-r from-pink-600 to-pink-500 ring-1 ring-inset ring-white/70 shadow-xl disabled:opacity-50 transition-all active:scale-[0.98]"
+            className="w-full flex justify-center py-3 px-4 rounded-full text-base font-bold text-white bg-gradient-to-r from-pink-600 to-pink-500 ring-1 ring-inset ring-white/50  disabled:opacity-50 transition-all active:scale-[0.98]"
           >
-            Confirm & Submit Order
+            {paymentMethod === "bakong"
+              ? "Pay & Place Order"
+              : "Confirm & Place Order"}
           </RippleButton>
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Bakong Modal */}
+      <BakongQRModal
+        isOpen={showBakongModal}
+        onClose={() => setShowBakongModal(false)}
+        qrString={qrString}
+        md5={qrMd5}
+        amount={total}
+        expiration={qrExpiration}
+        generationTime={qrGenerationTime}
+        onConfirm={handleFinalSubmit}
+        onRefresh={() => fetchBakongQR(true)}
+      />
+
+      {/* Confirmation Modal (for Telegram) */}
       {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="rounded-xl bg-white shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="p-6 text-center">
-              <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 clay-element bg-slate-100/40 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🛍️</span>
               </div>
               <h3 className="text-lg font-bold text-pink-600 mb-2">
@@ -203,14 +330,14 @@ export default function CheckoutPage() {
               </h3>
               <p className="text-sm text-gray-500 mb-6">
                 Are you sure you want to place this order with total{" "}
-                <strong>${total.toLocaleString()}</strong>?
+                <strong>${total.toLocaleString()}</strong> via Telegram?
               </p>
 
               <div className="flex flex-col gap-3">
                 <RippleButton
                   disabled={loading}
-                  onClick={handleFinalSubmit}
-                  className="w-full py-2.5 px-4 bg-gradient-to-r from-pink-600 to-pink-500 ring-1 ring-inset ring-white/70 text-white font-medium rounded-lg transition-colors shadow-xl disabled:opacity-50"
+                  onClick={() => handleFinalSubmit()}
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-pink-600 to-pink-500 ring-1 ring-inset ring-white/70 text-white font-medium rounded-full transition-colors shadow-xl disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -223,7 +350,7 @@ export default function CheckoutPage() {
                 </RippleButton>
                 <RippleButton
                   onClick={() => setShowConfirmModal(false)}
-                  className="w-full py-2.5 px-4 bg-white border border-gray-300/30 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                  className="w-full py-2.5 px-4 glass-btn bg-white border border-gray-300/30 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   Cancel
                 </RippleButton>

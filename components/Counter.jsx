@@ -24,7 +24,7 @@ const Counter = ({ productId }) => {
   };
 
   return (
-    <div className="inline-flex items-center gap-1 sm:gap-3 px-3 py-1 rounded border border-slate-200 max-sm:text-sm text-slate-600">
+    <div className="inline-flex glass-btn items-center gap-1 sm:gap-3 px-3 py-1 rounded-full max-sm:text-sm text-slate-600">
       <button onClick={removeFromCartHandler} className="p-1 select-none">
         -
       </button>

@@ -201,10 +201,10 @@ export default function OrderSuccessPage() {
           <House size={16} />
           Go to Home
         </Link>{" "}
-        <RippleButton
+        <button
           onClick={handleDownloadReceipt}
           disabled={downloading}
-          className="flex items-center justify-center gap-2 bg-gradient-to-b from-pink-600 to-pink-500 text-white ring-1 ring-white/30 shadow-xl px-5 py-2 rounded-xl font-bold transition-all active:scale-95 disabled:opacity-50"
+          className="flex glass-btn items-center justify-center gap-2 text-pink-600 ring-1 ring-white/30 shadow-xl px-5 py-3 rounded-full font-bold transition-all active:scale-95 disabled:opacity-50"
         >
           {downloading ? (
             <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function OrderSuccessPage() {
               Download Receipt
             </div>
           )}
-        </RippleButton>
+        </button>
       </div>
     </div>
   );

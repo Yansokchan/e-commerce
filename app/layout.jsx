@@ -7,8 +7,24 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata = {
-  title: "GoCart. - Shop smarter",
-  description: "GoCart. - Shop smarter",
+  title: "Socheath Store - Shop smarter",
+  description: "Socheath Store - Shop smarter",
+  keywords: ["Socheath Store", "Shop smarter", "Online Shopping"],
+  openGraph: {
+    title: "Socheath Store - Shop smarter",
+    description: "Socheath Store - Shop smarter",
+    type: "website",
+    locale: "en_US",
+    siteName: "Socheath Store",
+    images: [
+      {
+        url: "https://example.com/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Socheath Store - Shop smarter",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }) {

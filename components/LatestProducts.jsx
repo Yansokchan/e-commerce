@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import { useSelector } from "react-redux";
 
 const LatestProducts = () => {
-  const displayQuantity = 4;
+  const displayQuantity = 5;
   const products = useSelector((state) => state.product.list);
 
   return (

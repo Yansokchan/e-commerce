@@ -153,10 +153,10 @@ const Footer = () => {
     {
       title: "PRODUCTS",
       links: [
-        { text: "Earphones", path: "/", icon: null },
-        { text: "Headphones", path: "/", icon: null },
-        { text: "Smartphones", path: "/", icon: null },
-        { text: "Laptops", path: "/", icon: null },
+        { text: "Fashion", path: "/", icon: null },
+        { text: "Electronics", path: "/", icon: null },
+        { text: "Home & Garden", path: "/", icon: null },
+        { text: "Beauty & Health", path: "/", icon: null },
       ],
     },
     {
@@ -164,25 +164,41 @@ const Footer = () => {
       links: [
         { text: "Home", path: "/", icon: null },
         { text: "Privacy Policy", path: "/", icon: null },
-        { text: "Become Plus Member", path: "/pricing", icon: null },
-        { text: "Create Your Store", path: "/create-store", icon: null },
+        { text: "Terms & Conditions", path: "/", icon: null },
+        { text: "About Us", path: "/", icon: null },
       ],
     },
     {
       title: "CONTACT",
       links: [
-        { text: "+1-212-456-7890", path: "/", icon: MailIcon },
-        { text: "contact@example.com", path: "/", icon: PhoneIcon },
-        { text: "794 Francisco, 94102", path: "/", icon: MapPinIcon },
+        { text: "+855 12 65 12 65", path: "/", icon: MailIcon },
+        { text: "socheath.sem2026@gmail.com", path: "/", icon: PhoneIcon },
+        {
+          text: "Krang Thnung, Phnom Penh, Cambodia",
+          path: "/",
+          icon: MapPinIcon,
+        },
       ],
     },
   ];
 
   const socialIcons = [
-    { icon: FacebookIcon, link: "https://www.facebook.com" },
-    { icon: InstagramIcon, link: "https://www.instagram.com" },
-    { icon: TwitterIcon, link: "https://twitter.com" },
-    { icon: LinkedinIcon, link: "https://www.linkedin.com" },
+    {
+      icon: FacebookIcon,
+      link: "https://www.facebook.com",
+    },
+    {
+      icon: InstagramIcon,
+      link: "https://www.instagram.com",
+    },
+    {
+      icon: TwitterIcon,
+      link: "https://twitter.com",
+    },
+    {
+      icon: LinkedinIcon,
+      link: "https://www.linkedin.com",
+    },
   ];
 
   return (
@@ -205,7 +221,7 @@ const Footer = () => {
                 <Link
                   href={item.link}
                   key={i}
-                  className="flex items-center justify-center w-10 h-10 bg-slate-100 hover:scale-105 hover:border border-slate-300 transition rounded-full"
+                  className="flex clay-element items-center justify-center w-10 h-10 hover:scale-105 hover:border border-slate-300 transition rounded-full"
                 >
                   <item.icon />
                 </Link>

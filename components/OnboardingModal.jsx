@@ -81,7 +81,7 @@ export default function OnboardingModal({ user, onComplete }) {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Enter your phone number"
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
+                className="clay-element w-full pl-10 pr-4 py-2.5 rounded-lg outline-none"
               />
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function OnboardingModal({ user, onComplete }) {
           <RippleButton
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-pink-600 to-pink-400 text-white py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-400 text-white py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50"
           >
             {loading ? "Saving..." : "Complete Setup"}
           </RippleButton>

@@ -16,9 +16,9 @@ const OrderSummary = ({ totalPrice, items }) => {
 
   return (
     <div className="w-full max-w-lg lg:max-w-[340px]">
-      <LiquidGlassWrapper className="h-full shadow-xl rounded-2xl ring-1 ring-inset ring-white/70">
+      <div className="clay-element bg-gradient-to-br from-slate-100/4 0 to-slate-50/40 h-full rounded-2xl shadow-2xl">
         <div className="text-slate-500 text-sm p-7">
-          <h2 className="text-xl font-medium text-slate-600 mb-6">
+          <h2 className="text-xl font-medium text-pink-600 mb-6">
             Order Summary
           </h2>
 
@@ -47,7 +47,7 @@ const OrderSummary = ({ totalPrice, items }) => {
           <RippleButton
             disabled={loading}
             onClick={handlePlaceOrder}
-            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 rounded-lg ring-1 shadow-xl ring-inset ring-white/50 active:scale-95 transition-all mt-2"
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 rounded-full ring-1 shadow-xl ring-inset ring-white/50 active:scale-95 transition-all mt-2"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -63,7 +63,7 @@ const OrderSummary = ({ totalPrice, items }) => {
             Checkout securely via Telegram
           </p>
         </div>
-      </LiquidGlassWrapper>
+      </div>
     </div>
   );
 };

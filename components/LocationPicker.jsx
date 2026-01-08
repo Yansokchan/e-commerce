@@ -132,7 +132,7 @@ export default function LocationPicker({
             if (!e.target.value) onChange("");
           }}
           placeholder={placeholder}
-          className="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
+          className="w-full clay-element pl-10 pr-12 py-2.5 rounded-lg outline-none"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {loading ? (

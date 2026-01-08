@@ -17,7 +17,6 @@ import {
   completeOnboarding,
   openEditProfileModal,
 } from "@/lib/features/auth/authSlice";
-import RippleButton from "./ui/ripple-button";
 import Switch from "./ui/menuButton";
 
 const Navbar = () => {
@@ -82,13 +81,13 @@ const Navbar = () => {
           dispatch(openEditProfileModal());
           setDropdownOpen(false);
         }}
-        className="absolute top-2 right-2 p-1.5 text-slate-800 hover:text-pink-600 hover:bg-pink-50 rounded-full transition-all"
+        className="absolute glass-btn top-2 right-2 p-1.5 text-slate-800 hover:text-pink-600 hover:bg-pink-50 rounded-full transition-all"
         title="Edit Profile"
       >
         <Pencil size={14} />
       </button>
 
-      <div className="font-semibold text-slate-900 truncate pr-6">
+      <div className="font-semibold text-lg text-slate-900 truncate pr-6">
         {user?.user_metadata?.full_name || "User"}
       </div>
       <div className="text-slate-700 truncate">
@@ -121,7 +120,7 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="relative bg-white border-b border-gray-200 z-50">
+    <nav className="relative bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm z-50">
       <div className="mx-6">
         <div className="flex items-center justify-between max-w-7xl mx-auto py-4  transition-all">
           <Link
@@ -134,9 +133,6 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
-            <Link href="/" className="hover:text-pink-600 transition-colors">
-              Home
-            </Link>
             <Link
               href="/shop"
               className="hover:text-pink-600 transition-colors"
@@ -146,7 +142,7 @@ const Navbar = () => {
 
             <form
               onSubmit={handleSearch}
-              className="hidden xl:flex items-center w-xs text-sm gap-2 bg-slate-100 px-4 py-3 rounded-full"
+              className="hidden clay-element-search xl:flex items-center w-xs text-sm gap-2 bg-slate-100 px-4 py-3 rounded-full"
             >
               <Search size={18} className="text-slate-600" />
               <input
@@ -202,28 +198,31 @@ const Navbar = () => {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-72 backdrop-blur-3xl bg-white/40 rounded-xl ring-[.5px] ring-offset ring-white/20 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="absolute p-1 right-0 mt-2 w-72 clay-element-nav backdrop-blur-3xl bg-slate-100 rounded-xl ring-[.5px] ring-offset ring-white/20 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
                     <UserInfoBlock />
 
-                    <div className="border-t border-gray-100"></div>
+                    <div className="border-t border-gray-200"></div>
 
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      <LogOut size={16} />
-                      Sign out
-                    </button>
+                    <div className="flex justify-between items-center py-3 px-4">
+                      <p className="text-xs text-red-600">Want to sign out?</p>
+                      <button
+                        onClick={handleLogout}
+                        className="flex glass-btn rounded-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut size={16} />
+                        Sign out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <RippleButton
+              <button
                 onClick={() => dispatch(openLoginModal())}
-                className="px-8 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-white rounded-xl shadow-md shadow-slate-200/80 ring-1 ring-inset ring-white/20"
+                className="px-8 py-2 glass-btn text-pink-600 rounded-full"
               >
                 Sign in
-              </RippleButton>
+              </button>
             )}
           </div>
 
@@ -234,7 +233,7 @@ const Navbar = () => {
                 <Switch checked={dropdownOpen} onChange={toggleDropdown} />
 
                 {dropdownOpen && (
-                  <div className="absolute top-12 right-0 w-72 backdrop-blur-3xl bg-white/40 rounded-xl ring-[.5px] ring-offset ring-white/20 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="absolute top-12 right-0 w-72 backdrop-blur-3xl clay-element-nav bg-slate-100 rounded-xl ring-[.5px] ring-offset ring-white/20 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
                     <div className="flex items-center gap-3 p-4">
                       <img
                         src={
@@ -257,7 +256,7 @@ const Navbar = () => {
                           dispatch(openEditProfileModal());
                           setDropdownOpen(false);
                         }}
-                        className="ml-auto p-2 text-slate-700 hover:text-pink-600 hover:bg-pink-50 rounded-full transition-all"
+                        className="ml-auto p-2 clay-element text-slate-700 hover:text-pink-600 hover:bg-pink-50 rounded-full transition-all"
                       >
                         <Pencil size={16} />
                       </button>
@@ -284,7 +283,7 @@ const Navbar = () => {
                       )}
                     </div>
 
-                    <div className="border-t border-gray-100/30"></div>
+                    <div className="border-t  border-gray-300/50"></div>
 
                     <div className="py-1">
                       <Link
@@ -302,7 +301,7 @@ const Navbar = () => {
                       >
                         <ShoppingCart size={16} />
                         My Cart
-                        <span className="ml-auto backdrop-blur-3xl text-pink-600 text-xs px-2 py-0.5 rounded-full">
+                        <span className="ml-auto clay-element backdrop-blur-3xl text-pink-600 text-xs px-2 py-0.5 rounded-full">
                           {cartCount}
                         </span>
                       </Link>
@@ -316,25 +315,28 @@ const Navbar = () => {
                       </Link>
                     </div>
 
-                    <div className="border-t border-gray-100/30"></div>
+                    <div className="border-t border-gray-300/50"></div>
 
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-400/30 transition-colors"
-                    >
-                      <LogOut size={16} />
-                      Sign out
-                    </button>
+                    <div className="flex justify-between items-center py-3 px-4">
+                      <p className="text-xs text-red-600">Want to sign out?</p>
+                      <button
+                        onClick={handleLogout}
+                        className="flex px-6 py-2 glass-btn items-center rounded-full gap-3 text-sm text-red-600 hover:bg-red-400/30 transition-colors"
+                      >
+                        <LogOut size={16} />
+                        Sign out
+                      </button>
+                    </div>
                   </div>
                 )}
               </>
             ) : (
-              <RippleButton
+              <button
                 onClick={() => dispatch(openLoginModal())}
-                className="px-5 py-2 bg-gradient-to-r from-pink-600 to-pink-400 text-sm text-white rounded-xl shadow-xl shadow-slate-200/80 ring ring-inset ring-white/20"
+                className="px-5 py-2 glass-btn text-pink-600 rounded-full"
               >
                 Sign In
-              </RippleButton>
+              </button>
             )}
           </div>
         </div>

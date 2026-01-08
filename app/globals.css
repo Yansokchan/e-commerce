@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+html {
+  text-shadow: 0px 1px 1px var(--tw-text-shadow-color, rgb(0 0 0 / 0.1)),
+    0px 1px 2px var(--tw-text-shadow-color, rgb(0 0 0 / 0.1)),
+    0px 2px 4px var(--tw-text-shadow-color, rgb(0 0 0 / 0.1));
+}
+@property --tw-text-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-text-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
 @layer components {
   @keyframes marqueeScroll {
     0% {
@@ -36,4 +51,72 @@
   .animate-rippling {
     animation: rippling 600ms ease-out;
   }
+}
+
+:root {
+  --clay-lavender: #e6e6fa;
+  --clay-mint: #98fb98;
+  --clay-blue: #87ceeb;
+  --clay-peach: #ffdab9;
+  --clay-white: #fefefe;
+  --clay-shadow: rgba(0, 0, 0, 0.08);
+  --clay-inner-shadow: rgba(0, 0, 0, 0.05);
+}
+
+.clay-element {
+  box-shadow: 4px 4px 8px var(--clay-shadow),
+    -4px -4px 8px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 4px var(--clay-inner-shadow),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+.clay-element-search {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 4px var(--clay-inner-shadow),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.clay-element-nav {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15),
+    -4px -4px 8px rgba(255, 255, 255, 0.1),
+    inset 2px 2px 4px var(--clay-inner-shadow),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.clay-element-couter {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05),
+    -4px -4px 8px rgba(255, 255, 255, 0.5),
+    inset 2px 2px 4px var(--clay-inner-shadow),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.clay-pressed {
+  transform: translateY(1px);
+  box-shadow: 4px 4px 8px var(--clay-shadow),
+    -4px -4px 8px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 8px var(--clay-inner-shadow),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+}
+
+.clay-inset {
+  box-shadow: inset 8px 8px 16px var(--clay-shadow),
+    inset -8px -8px 16px rgba(255, 255, 255, 0.9);
+}
+
+.glass-btn {
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05),
+    -4px -4px 8px rgba(255, 255, 255, 0.5),
+    inset 2px 2px 4px var(--clay-inner-shadow),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1);
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.glass-btn:active {
+  transform: scale(0.95);
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: rgba(255, 255, 255, 0.6);
 }

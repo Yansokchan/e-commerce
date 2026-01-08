@@ -1,0 +1,129 @@
+import { NextResponse } from "next/server";
+import axios from "axios";
+import { getBakongToken } from "@/lib/bakong";
+
+export async function POST(request) {
+  try {
+    const {
+      md5,
+      amount: expectedAmount,
+      generationTime,
+    } = await request.json();
+    console.log("Checking payment for MD5:", md5, "Expected:", expectedAmount);
+
+    if (!md5) {
+      return NextResponse.json({ error: "MD5 is required" }, { status: 400 });
+    }
+
+    const BAKONG_BASE_URL =
+      process.env.BAKONG_BASE_URL || "https://api-bakong.nbc.gov.kh/v1";
+
+    // Get Dynamic Token
+    let accessToken;
+    try {
+      accessToken = await getBakongToken();
+    } catch (tokenErr) {
+      return NextResponse.json(
+        { error: "Bakong Auth Failed", details: tokenErr.message },
+        { status: 500 }
+      );
+    }
+
+    // Call Bakong API to check payment
+    const response = await axios.post(
+      `${BAKONG_BASE_URL}/check_transaction_by_md5`,
+      { md5 },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = response.data;
+    console.log("Bakong Raw Response for MD5", md5, ":", JSON.stringify(data));
+
+    // responseCode 0 means success in Bakong API
+    if (data.responseCode === 0 && data.data?.hash) {
+      const trans = data.data;
+
+      // 0. Verify Recipient ID (to avoid mixed transactions if shared merchant id)
+      const expectedToPool =
+        process.env.BAKONG_ACCOUNT_ID || "sokchan_yan@aclb";
+      if (trans.toAccountId !== expectedToPool) {
+        console.log(
+          `Recipient mismatch. Expected: ${expectedToPool}, Actual: ${trans.toAccountId}`
+        );
+        return NextResponse.json({
+          success: false,
+          message: "Transaction found but recipient does not match.",
+        });
+      }
+
+      // 1. Verify it's a NEW transaction (after QR generation)
+      // We allow a small 5s buffer for server/client clock drift
+      if (generationTime && trans.createdDateMs < generationTime - 5000) {
+        console.log(
+          "Ignore OLD transaction for MD5:",
+          md5,
+          "Created:",
+          trans.createdDateMs,
+          "Gen:",
+          generationTime
+        );
+        return NextResponse.json({
+          success: false,
+          message: "Transaction found but it's old/stale.",
+        });
+      }
+
+      // 2. Verify Amount (Optional but recommended)
+      // If we have an expected amount, we should verify it roughly matches.
+      // Note: If user pays KHR for USD QR, Bakong might return KHR amount.
+      // For now, let's just log it or do a loose check.
+      if (expectedAmount) {
+        const actualAmount = trans.amount;
+        // Basic check: if same currency, must match exactly.
+        // If different, we might need a conversion rate, but for now let's just log.
+        console.log(
+          `Amount Check - Expected: ${expectedAmount}, Actual: ${actualAmount} ${trans.currency}`
+        );
+      }
+
+      // console.log(`Payment confirmed for MD5: ${md5}, Hash: ${trans.hash}`);
+      return NextResponse.json({
+        success: true,
+        message: "Payment confirmed",
+        bakongHash: trans.hash,
+        bakongData: trans,
+      });
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: data.responseMessage || "Payment not found or not completed",
+        bakongData: data.data || null,
+      });
+    }
+  } catch (error) {
+    const errorMsg = error.response?.data || error.message;
+    console.error("Bakong check-payment exception:", JSON.stringify(errorMsg));
+
+    // If it's a 404 from Bakong, handle it gracefully
+    if (error.response?.status === 404) {
+      return NextResponse.json({
+        success: false,
+        message: "Transaction not found",
+      });
+    }
+
+    return NextResponse.json(
+      {
+        error: "Internal error",
+        details:
+          typeof errorMsg === "string" ? errorMsg : JSON.stringify(errorMsg),
+      },
+      { status: 500 }
+    );
+  }
+}

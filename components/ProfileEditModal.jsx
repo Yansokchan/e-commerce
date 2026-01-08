@@ -114,7 +114,7 @@ export default function ProfileEditModal() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Enter your phone number"
-                className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-400/30 text-gray-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition"
+                className="clay-element w-full pl-10 pr-4 py-2.5 text-gray-600 rounded-lg outline-none"
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function ProfileEditModal() {
           <RippleButton
             type="submit"
             disabled={loading || !hasChanges}
-            className="w-full bg-gradient-to-r from-pink-600 to-pink-400 text-white py-3 rounded-lg font-medium shadow-xl transition-all disabled:opacity-50 ring-1 ring-inset ring-white/50"
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-400 text-white py-3 rounded-full font-medium shadow-xl transition-all disabled:opacity-50 ring-1 ring-inset ring-white/50"
           >
             {loading ? (
               <div className="flex items-center gap-2">

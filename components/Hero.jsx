@@ -12,10 +12,10 @@ const Hero = () => {
   return (
     <div className="mx-6">
       <div className="flex max-xl:flex-col gap-8 max-w-7xl mx-auto my-10">
-        <div className="relative flex-1 flex flex-col bg-gradient-to-br from-pink-500 to-pink-300 rounded-3xl ring-1 ring-inset ring-white/30 shadow-xl xl:min-h-100 group">
+        <div className="relative flex-1 flex flex-col clay-element bg-gradient-to-br from-pink-300 to-pink-200 rounded-3xl ring-1 ring-inset ring-white/30 shadow-xl xl:min-h-100 group">
           <div className="p-5 sm:p-16">
             <div className="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-pink-300 text-white pr-4 p-1 rounded-full text-xs sm:text-sm ring-[0.5px] ring-white/20 ring-inset shadow-xs">
-              <span className="bg-pink-600 px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs ring-[0.5px] ring-white/40 ring-inset shadow-xs">
+              <span className="bg-pink-600 cla px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs ring-[0.5px] ring-white/40 ring-inset shadow-xs">
                 NEWS
               </span>{" "}
               Free Shipping on Orders Above $50!{" "}
@@ -31,7 +31,7 @@ const Hero = () => {
               <p>Starts from</p>
               <p className="text-3xl">{currency}4.90</p>
             </div>
-            <RippleButton className="bg-gradient-to-r from-pink-600 to-pink-400 shadow-xl ring-[0.5px] ring-white/20 ring-inset text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-[14px]">
+            <RippleButton className="bg-gradient-to-r from-pink-600 to-pink-400 shadow-xl ring-1 ring-white/20 ring-inset text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-full">
               LEARN MORE
             </RippleButton>
           </div>
@@ -42,7 +42,7 @@ const Hero = () => {
           />
         </div>
         <div className="flex flex-col md:flex-row xl:flex-col gap-5 w-full xl:max-w-sm text-sm text-slate-600">
-          <div className="flex-1 flex items-center justify-between w-full bg-gradient-to-br from-orange-200 to-orange-400 ring-1 ring-inset ring-white/30 shadow-xl rounded-3xl p-6 px-8 group">
+          <div className="flex-1 flex items-center justify-between w-full clay-element bg-gradient-to-br from-orange-300 to-orange-200 rounded-3xl p-6 px-8 group">
             <div>
               <p className="text-3xl font-medium bg-gradient-to-r from-slate-800 to-[#FFAD51] bg-clip-text text-transparent max-w-40">
                 Best products
@@ -57,7 +57,7 @@ const Hero = () => {
             </div>
             <Image className="w-35" src={assets.hero_product_img1} alt="" />
           </div>
-          <div className="flex-row-reverse flex flex-1 items-center justify-between w-full bg-gradient-to-br from-blue-200 to-blue-400 ring-1 ring-inset ring-white/30 shadow-xl rounded-3xl p-6 px-8 group">
+          <div className="flex-row-reverse flex flex-1 items-center justify-between w-full clay-element bg-gradient-to-br from-blue-300 to-blue-200 rounded-3xl p-6 px-8 group">
             <div className="text-end">
               <p className="text-3xl font-medium bg-gradient-to-l from-slate-800 to-[#78B2FF] bg-clip-text text-transparent max-w-40">
                 20% discounts
