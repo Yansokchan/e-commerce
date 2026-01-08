@@ -56,7 +56,7 @@ const Hero = () => {
                 />{" "}
               </p>
             </div>
-            <Image className="w-35" src={hero_pd1} alt="" />
+            <Image className="w-35" src={hero_pd2} alt="" />
           </div>
           <div className="flex-row-reverse flex flex-1 items-center justify-between w-full clay-element bg-gradient-to-br from-blue-300 to-blue-200 rounded-3xl p-6 px-8 group">
             <div className="text-end">
@@ -71,7 +71,7 @@ const Hero = () => {
                 />{" "}
               </p>
             </div>
-            <Image className="w-35" src={hero_pd2} alt="" />
+            <Image className="w-35" src={hero_pd1} alt="" />
           </div>
         </div>
       </div>
