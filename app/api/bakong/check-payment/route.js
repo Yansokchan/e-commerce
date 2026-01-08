@@ -141,12 +141,14 @@ export async function POST(request) {
 
     // Check for HTML response (CloudFront Block, etc.)
     const errorData = error.response?.data;
-    if (typeof errorData === "string" && errorData.includes("<HTML>")) {
+    if (
+      typeof errorData === "string" &&
+      (errorData.includes("<HTML>") || errorData.includes("<!DOCTYPE"))
+    ) {
       return NextResponse.json(
         {
           error: "Upstream Service Error",
-          details:
-            "The payment gateway returned an invalid response (HTML). Please try again later.",
+          details: `HTML Response: ${errorData.substring(0, 500)}...`, // Return first 500 chars to debug
         },
         { status: 502 }
       );
