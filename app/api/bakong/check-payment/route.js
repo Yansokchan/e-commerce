@@ -60,7 +60,6 @@ async function handlePost(request) {
         Accept: "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9",
         "Cache-Control": "no-cache",
-        Cookie: cookies ? cookies.join("; ") : "",
         Origin: "https://bakong.nbc.gov.kh",
         Referer: "https://bakong.nbc.gov.kh/",
         "User-Agent":
