@@ -1,11 +1,12 @@
 "use client";
-import { assets } from "@/assets/assets";
 import { ArrowRightIcon, ChevronRightIcon } from "lucide-react";
+import CategoriesMarquee from "./CategoriesMarquee";
 import Image from "next/image";
 import React from "react";
-import CategoriesMarquee from "./CategoriesMarquee";
 import RippleButton from "@/components/ui/ripple-button";
-
+import hero from "@/assets/hero.webp";
+import hero_pd1 from "@/assets/hero-pd1.png";
+import hero_pd2 from "@/assets/hero-pd2.png";
 const Hero = () => {
   const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
 
@@ -37,7 +38,7 @@ const Hero = () => {
           </div>
           <Image
             className="sm:absolute bottom-0 right-0 md:right-10 w-full sm:max-w-sm"
-            src={assets.hero_model_img}
+            src={hero}
             alt=""
           />
         </div>
@@ -55,7 +56,7 @@ const Hero = () => {
                 />{" "}
               </p>
             </div>
-            <Image className="w-35" src={assets.hero_product_img1} alt="" />
+            <Image className="w-35" src={hero_pd1} alt="" />
           </div>
           <div className="flex-row-reverse flex flex-1 items-center justify-between w-full clay-element bg-gradient-to-br from-blue-300 to-blue-200 rounded-3xl p-6 px-8 group">
             <div className="text-end">
@@ -70,7 +71,7 @@ const Hero = () => {
                 />{" "}
               </p>
             </div>
-            <Image className="w-35" src={assets.hero_product_img2} alt="" />
+            <Image className="w-35" src={hero_pd2} alt="" />
           </div>
         </div>
       </div>
