@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { getBakongToken, getBakongAuth } from "@/lib/bakong";
+import { getBakongAuth } from "@/lib/bakong";
 
 export async function POST(request) {
   try {
@@ -55,7 +55,7 @@ export async function POST(request) {
     );
 
     const data = response.data;
-    console.log("Bakong Raw Response for MD5", md5, ":", JSON.stringify(data));
+    // console.log("Bakong Raw Response for MD5", md5, ":", JSON.stringify(data));
 
     // responseCode 0 means success in Bakong API
     if (data.responseCode === 0 && data.data?.hash) {
@@ -116,6 +116,10 @@ export async function POST(request) {
         success: false,
         message: data.responseMessage || "Payment not found or not completed",
         bakongData: data.data || null,
+        debug: {
+          md5,
+          responseCode: data.responseCode,
+        },
       });
     }
   } catch (error) {
@@ -161,13 +165,31 @@ export async function POST(request) {
 
     return NextResponse.json(
       {
-        error: "Internal error",
+        error: "Internal error checking payment",
+        message: error.message,
         details:
           typeof errorData === "string"
             ? errorData
-            : JSON.stringify(errorData || error.message),
+            : errorData || error.message,
       },
       { status: 500 }
     );
   }
+}
+
+// Health Check for Vercel Deployment Verification
+export async function GET() {
+  return NextResponse.json({
+    status: "ok",
+    message: "Bakong Check Payment Service is Running",
+    env: {
+      hasMerchantId: !!process.env.BAKONG_MERCHANT_ID,
+      hasSecret: !!process.env.BAKONG_SECRET,
+      hasAccountId: !!process.env.BAKONG_ACCOUNT_ID,
+      baseUrl:
+        process.env.BAKONG_BASE_URL ||
+        "https://api-bakong.nbc.gov.kh/v1 (default)",
+    },
+    timestamp: new Date().toISOString(),
+  });
 }
