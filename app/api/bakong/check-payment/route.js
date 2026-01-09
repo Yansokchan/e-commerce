@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import { getBakongAuth } from "@/lib/bakong";
 
+// Use Edge Runtime instead of Node.js - different IP ranges might bypass CloudFront WAF
+export const runtime = "edge";
+
 export async function POST(request) {
   try {
     return await handlePost(request);
