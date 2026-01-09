@@ -54,15 +54,13 @@ async function handlePost(request) {
     const checkUrl = `${BAKONG_BASE_URL}/check_transaction_by_md5`;
     console.log(`Checking Payment at: ${checkUrl} for MD5: ${md5}`);
 
-    // Call Bakong API to check payment
+    // Call Bakong API with ABSOLUTE MINIMUM headers (per documentation)
+    // Last attempt before proxy solution
     const response = await fetch(checkUrl, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
-        Accept: "application/json",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
       body: JSON.stringify({ md5 }),
     });
